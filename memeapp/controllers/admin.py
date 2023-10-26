@@ -14,6 +14,8 @@ bp = Blueprint("admin", __name__)
 def index():
     if g.user and not g.user.is_admin:
         return redirect("/home")
-
+# that eval looks sus here. Check copilot chat log for suggestion, solutions
     return render_template("admin.html", environ=os.environ, user=g.user,
-                           settings={name: eval(name) for name in settings if not name.startswith("__")})
+                          settings={name: eval(name) for name in settings if not name.startswith("__")})
+    # settings = {name: getattr(module, name) for name in settings if not name.startswith("__")}
+    # return render_template("admin.html", environ=os.environ, user=g.user, settings=settings)

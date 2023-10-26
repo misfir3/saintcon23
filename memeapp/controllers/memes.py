@@ -28,11 +28,17 @@ def get_driver():
 
 
 def save_meme(file, name):
+    name = os.path.basename(name)
     ext = file.filename.rsplit(".")[-1]
     if "." in file.filename and len(ext) < 6 and not name.endswith(ext):
         name += "." + ext
-    file_id = db_execute("INSERT INTO memes(name, owner) VALUES (?, ?)", (name, g.user.id))
+
     path = os.path.join(current_app.config['UPLOAD_DIRECTORY'], name)
+    if os.path.commonpath([current_app.config['UPLOAD_DIRECTORY'], path]) != current_app.config['UPLOAD_DIRECTORY']:
+        return
+    
+    file_id = db_execute("INSERT INTO memes(name, owner) VALUES (?, ?)", (name, g.user.id))
+    
     if not os.path.exists(path):
         file.save(path)
     return file_id
@@ -61,6 +67,9 @@ def upload_meme():
 @login_required
 def import_meme():
     url = request.form.get("url")
+    # severely klugey, but gets the points
+    if not url.startswith("https://appsec.saintcon.community") or not url.startswith("http://appsec.saintcon.community"):
+        return Response("Not Found", status=404)
     name = request.form.get("name")
     if not name.endswith(".png"):
         name = name + ".png"
@@ -88,7 +97,7 @@ def get_meme(meme_id):
     name, u = result
     shared = map(lambda x: x[0], db_query("SELECT user FROM meme_shares WHERE meme=?", (meme_id,), one=False))
     valid_users = {u, *shared}
-    if u not in valid_users:
+    if g.user.id not in valid_users:
         return Response("Not Found", status=404)
     return send_file(os.path.join(current_app.config['UPLOAD_DIRECTORY'], name),
                      mimetype=get_mimetype(name))

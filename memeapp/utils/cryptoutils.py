@@ -8,7 +8,6 @@ from dataclasses import dataclass
 
 from memeapp.conf.constants import SESSION_TOKEN_NAME
 
-
 @dataclass
 class Session:
     timestamp: int
@@ -46,7 +45,6 @@ def get_session_token(user_id: int, ts: int = int(datetime.utcnow().timestamp())
 def get_session_from_token(token) -> Session:
     decoded = base64.b64decode(token.encode())
     return pickle.loads(decoded)
-
 
 def verify_session_token(request) -> bool:
     token = request.cookies.get(SESSION_TOKEN_NAME)

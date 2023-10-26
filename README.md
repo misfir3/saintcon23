@@ -1,6 +1,9 @@
 # Dank Meme Application
 
-This application allows users to share dank memes with each other. It has many vulnerabilities. Your job is to fix it.
+Pushing a change to hopefully trigger codeql here
+
+This application allows users to share dank memes with each other. It has many vulnerabilities. Your job is to 
+fix it.
 
 Additional READMEs have been included in subdirectories of this project.
 
